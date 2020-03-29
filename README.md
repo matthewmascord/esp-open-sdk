@@ -56,27 +56,86 @@ $ sudo apt-get install libtool-bin
 ```
 
 ## MacOS:
-```bash
-$ brew tap homebrew/dupes
-$ brew install binutils coreutils automake wget gawk libtool help2man gperf gnu-sed --with-default-names grep
-$ export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
+This fork incorporates various fixes needed for Mac OS Catalina.
+
+1. Sed fixes due to Mac sed used in preference go GNU Sed - fix by adding gnubin
+path before /usr/bin (see below)
+
+1. crosstool-NG/configure.ac in the linked submodule is tweaked to allow Bash versions greater than 3. Not actually
+a Mac-specific issue but could be if you have purposefully installed Bash 4 or above.
+    
+    Line 193 changed to:
+    
+    ```
+                         |$EGREP '^GNU bash, version (3\.[1-9]|[4-9])')
+    ```
+
+1. Fixes derived from https://github.com/pfalcon/esp-open-sdk/issues/342#issuecomment-449662238
+
+    On line 51-52 of crosstool-NG/kconfig/Makefile,
+    
+    ```makefile
+    $(nconf_OBJ) $(nconf_DEP): CFLAGS += $(INTL_CFLAGS) -I/usr/local/Cellar/ncurses/6.2/include
+    nconf: LDFLAGS += -lmenu -lpanel $(LIBS) -L/usr/local/Cellar/ncurses/6.2/lib
+    ```
+
+## Installing Mac OS pre-requisites:
+
+You will need Homebrew installed first.
+
+The following is a useful one-liner to remove any pre-existing Brew packages. This was
+useful to test the below instructions.
+
+```shell script
+brew remove --force $(brew list)
 ```
 
-In addition to the development tools MacOS needs a case-sensitive filesystem.
-You might need to create a virtual disk and build esp-open-sdk on it:
-```bash
-$ sudo hdiutil create ~/Documents/case-sensitive.dmg -volname "case-sensitive" -size 10g -fs "Case-sensitive HFS+"
-$ sudo hdiutil mount ~/Documents/case-sensitive.dmg
-$ cd /Volumes/case-sensitive
+The following installs all the needed dependencies:
+
+```shell script
+brew install \
+  binutils \
+  coreutils \
+  automake \
+  wget \ 
+  gawk \
+  libtool \
+  help2man \
+  gperf \
+  gnu-sed \
+  grep \
+  ncurses
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH:/usr/local/Cellar/ncurses/6.2/bin:/usr/local/opt/binutils/bin"
 ```
+
+Double-check your path. The the bintools and ncurses need to be after /usr/bin and /usr/local/bin.
+See https://github.com/pfalcon/esp-open-sdk/issues/342#issuecomment-468391431
+
+For example,
+
+```shell script
+% echo $PATH
+/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/Cellar/ncurses/6.2/bin:/usr/local/opt/binutils/bin
+```
+
+Assuming your default file system is not case-sensitive, you will need to
+create and mount a case-sensitive drive, and then recursively clone
+the repo from this drive.
+
+The easiest way to do this in Mac OS is to create a new case-sensitive APFS volume
+using Disk Utility called case-sensitive.  This will appear as /Volumes/case-sensitive and will not
+need mounting on every reboot.
 
 Building
 ========
 
 Be sure to clone recursively:
 
-```
-$ git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
+```shell script
+cd /Volumes/case-sensitive
+git clone --recursive https://github.com/matthewmascord/esp-open-sdk.git
+cd esp-open-sdk
 ```
 
 The project can be built in two modes:
@@ -118,6 +177,17 @@ $ make STANDALONE=n
 ```
 
 This will download all necessary components and compile them.
+
+Eventually, you would hope to get a message similar to the below, after 20 minutes or 
+so:
+
+```
+Xtensa toolchain is built, to use it:
+
+export PATH=/Volumes/case-sensitive/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
+
+Espressif ESP8266 SDK is installed, its libraries and headers are merged with the toolchain
+```
 
 Using the toolchain
 ===================
