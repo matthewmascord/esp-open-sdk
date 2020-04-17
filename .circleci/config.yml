@@ -15,4 +15,4 @@ jobs:
             CT_EXPERIMENTAL=y \
             CT_ALLOW_BUILD_AS_ROOT=y \
             CT_ALLOW_BUILD_AS_ROOT_SURE=y \
-            make
+            make STANDALONE=n
