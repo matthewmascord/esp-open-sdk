@@ -1,0 +1,15 @@
+version: 2.0
+jobs:
+  build:
+    docker:
+      - image: altosi/esp8266-sdk-build:0.0.1
+    steps:
+      - checkout
+      - run:
+          name: "Update submodules"
+          command: |
+            git submodule update --init --recursive
+      - run:
+          name: "Make"
+          command: |
+            make
