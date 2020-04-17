@@ -16,3 +16,10 @@ jobs:
             CT_ALLOW_BUILD_AS_ROOT=y \
             CT_ALLOW_BUILD_AS_ROOT_SURE=y \
             make STANDALONE=n
+      - run:
+          name: "Compress Artifacts"
+          command: |
+            tar -czvf xtensa-lx106-elf.tar.gz xtensa-lx106-elf
+      - store_artifacts:
+          path: xtensa-lx106-elf.tar.tz
+          destination: xtensa-lx106-elf
