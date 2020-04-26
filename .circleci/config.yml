@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: altosi/esp8266-sdk-build:0.0.1
+      - image: $DOCKERHUB_USERNAME/esp8266-sdk-build:0.0.1
     steps:
       - checkout
       - run:

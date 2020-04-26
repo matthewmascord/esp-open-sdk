@@ -160,6 +160,43 @@ You can build a statically linked toolchain by uncommenting
 `CT_STATIC_TOOLCHAIN=y` in the file `crosstool-config-overrides`. More
 fine-tunable options may be available in that file and/or Makefile.
 
+Building in CircleCI
+====================
+
+To build in CircleCI you will need CircleCI and DockerHub access tokens. These can be obtained through the
+respective GUIs.
+
+Add the following to your .zshenv (or .profile on Ubuntu):
+
+```
+export CIRCLE_TOKEN=xxxxx
+export GITHUB_USERNAME=xxxxx
+export DOCKERHUB_TOKEN=xxxxx
+export DOCKERHUB_USERNAME=xxxxx
+```
+
+Then build and push the images
+
+```shell script
+bin/build-image.sh
+bin/push-image.sh
+```
+
+To validate your CircleCI configuration locally before pushing changes,
+
+```shell script
+brew install circleci
+circleci config validate
+```
+
+To create the CircleCI pipeline:
+
+```shell script
+bin/create-pipeline.sh
+```
+
+The next time you push changes to Github, the pipeline will be executed.
+
 License
 =======
 
