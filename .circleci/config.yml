@@ -15,7 +15,7 @@ jobs:
             CT_EXPERIMENTAL=y \
             CT_ALLOW_BUILD_AS_ROOT=y \
             CT_ALLOW_BUILD_AS_ROOT_SURE=y \
-            make STANDALONE=n
+            make
       - run:
           name: "Compress Artifacts"
           command: |
